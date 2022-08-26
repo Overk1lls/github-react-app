@@ -2,8 +2,10 @@ import { config as loadConfig } from "dotenv";
 import appRootPath from 'app-root-path';
 
 interface Config {
-  PORT: number;
-  GITHUB_TOKEN: string;
+  port: number;
+  githubToken: string;
+  githubClientId: string;
+  githubClientSecret: string;
 }
 
 export const isNotProduction = (): boolean => {
@@ -27,7 +29,9 @@ if (loadError) {
 const getConfig = (): Config => {
   [
     'PORT',
-    'GITHUB_TOKEN'
+    'GITHUB_TOKEN',
+    'GITHUB_CLIENT_ID',
+    'GITHUB_CLIENT_SECRET'
   ].forEach((variable) => {
     if (!process.env[variable]) {
       throw new Error(`The environment variable '${variable}' is missing!`);
@@ -35,8 +39,10 @@ const getConfig = (): Config => {
   });
 
   return {
-    PORT: parseInt(process.env.PORT!),
-    GITHUB_TOKEN: process.env.GITHUB_TOKEN!,
+    port: parseInt(process.env.PORT!),
+    githubToken: process.env.GITHUB_TOKEN!,
+    githubClientId: process.env.GITHUB_CLIENT_ID!,
+    githubClientSecret: process.env.GITHUB_CLIENT_SECRET!,
   };
 };
 

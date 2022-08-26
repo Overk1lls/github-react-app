@@ -1,11 +1,13 @@
-import { config } from "./lib/config";
+import { config, isNotProduction } from "./lib/config";
 import { createApp } from "./middlewares";
 
-const start = async () => {
-  const { PORT } = config;
+async function start() {
+  console.log((isNotProduction() ? 'Development' : 'Production') + ' environment');
+
+  const { port } = config;
   const app = createApp();
 
-  app.listen(PORT, () => console.info(`App is running on port: ${PORT}`));
-};
+  app.listen(port, () => console.log(`App is running on port: ${port}`));
+}
 
 start().catch(console.error);
