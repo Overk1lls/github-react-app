@@ -16,23 +16,16 @@ export class RepoController extends BaseHttpController {
     super();
   }
 
-<<<<<<< HEAD
-=======
   public get octokit(): OctokitService {
     return this.octokitService;
   }
 
->>>>>>> 65814b5 (Dependency Injection support add)
   @httpGet(`/by-org/:${Parameters.Org}`, paginateHandler)
   async getRepos(@request() req: Request, @requestParam(Parameters.Org) org: string) {
     const { paginate } = req as RequestWithPaginate;
     const repos = await this.octokitService.getReposByOrg(org, paginate);
 
-<<<<<<< HEAD
-    return this.json({ repositories: repos }, 200);
-=======
     return this.json(repos, 200);
->>>>>>> 65814b5 (Dependency Injection support add)
   }
 
   @httpGet(`/by-owner/:${Parameters.Owner}/:${Parameters.Repo}/commits`, paginateHandler)
@@ -44,11 +37,7 @@ export class RepoController extends BaseHttpController {
     const { paginate } = req as RequestWithPaginate;
     const commits = await this.octokitService.getRepoCommits(owner, repo, paginate);
 
-<<<<<<< HEAD
-    return this.json({ commits }, 200);
-=======
     return this.json(commits, 200);
->>>>>>> 65814b5 (Dependency Injection support add)
   }
 
   @httpGet(`/by-owner/:${Parameters.Owner}/:${Parameters.Repo}/branches`, paginateHandler)
@@ -60,10 +49,6 @@ export class RepoController extends BaseHttpController {
     const { paginate } = req as RequestWithPaginate;
     const branches = await this.octokitService.getRepoBranches(owner, repo, paginate);
 
-<<<<<<< HEAD
-    return this.json({ branches }, 200);
-=======
     return this.json(branches, 200);
->>>>>>> 65814b5 (Dependency Injection support add)
   }
 }

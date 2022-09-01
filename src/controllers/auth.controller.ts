@@ -12,11 +12,7 @@ export class AuthController extends BaseHttpController {
 
   @httpPost('/')
   async auth(@request() req: Request) {
-<<<<<<< HEAD
-    const { code }: { code: string } = req.body;
-=======
     const { code } = req.body as { code: string };
->>>>>>> 65814b5 (Dependency Injection support add)
     if (!code) {
       throw new LogicError(ErrorCode.AuthNo);
     }
@@ -26,10 +22,6 @@ export class AuthController extends BaseHttpController {
       throw new LogicError(ErrorCode.AuthExpired, response);
     }
 
-<<<<<<< HEAD
-    this.json({ accessToken: response }, 200);
-=======
     return this.json({ accessToken: response }, 200);
->>>>>>> 65814b5 (Dependency Injection support add)
   }
 }
