@@ -1,11 +1,14 @@
-import { Octokit } from "octokit";
-import { PaginatingEndpoints } from "@octokit/plugin-paginate-rest";
-import { ErrorCode } from "../errors/codes";
-import { LogicError } from "../errors/logic.error";
-import { config } from "../lib/config";
-import { GithubData } from "../models/github-data";
+import { Octokit } from 'octokit';
+import { config } from '../lib/config';
+import { inject, injectable } from 'inversify';
+import { types } from '../di/types';
+import type { GithubData } from '../models/github-data';
+import type { Optimal } from '../lib/types';
+import type { OctokitResponse, Endpoints } from '@octokit/types';
+import type { PaginatingEndpoints } from '@octokit/plugin-paginate-rest';
+import type { PaginationResults } from '@octokit/plugin-paginate-rest/dist-types/types';
 
-const { githubClientId, githubClientSecret, githubToken } = config;
+const { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } = config;
 
 export interface Paginate {
   skip?: number;
@@ -18,12 +21,16 @@ export interface AccessTokenResponse {
   scope: string;
 }
 
+@injectable()
 export class OctokitService {
   private octokit: Octokit;
 
-  constructor() {
+  constructor(
+    @inject<Optimal<string>>(types.OctokitToken)
+    token?: string
+  ) {
     this.octokit = new Octokit({
-      auth: githubToken,
+      auth: token,
       log: {
         debug: console.debug,
         info: console.info,
@@ -33,76 +40,75 @@ export class OctokitService {
     });
   }
 
-  getRepositoriesByOrg(organization: string, paginate?: Paginate) {
-    return this.getRepoData('GET /orgs/{org}/repos', { organization }, paginate);
+  get getOctokit(): Octokit {
+    return this.octokit;
   }
 
-  getRepositoryCommits(owner: string, repository: string, paginate?: Paginate) {
-    return this.getRepoData('GET /repos/{owner}/{repo}/commits', { owner, repository }, paginate);
+  getReposByOrg(org: string, paginate?: Paginate) {
+    return this.getRepoData('GET /orgs/{org}/repos', { org, ...paginate });
   }
 
-  getRepositoryBranches(owner: string, repository: string, paginate?: Paginate) {
-    return this.getRepoData('GET /repos/{owner}/{repo}/branches', { owner, repository }, paginate);
+  getRepoCommits(owner: string, repo: string, paginate?: Paginate) {
+    return this.getRepoData('GET /repos/{owner}/{repo}/commits', { owner, repo, ...paginate });
   }
 
-  private async getRepoData(
-    route: keyof PaginatingEndpoints,
-    data: GithubData,
-    paginate?: Paginate
-  ) {
-    const { owner, repository: repo, organization: org } = data;
-    let count = 0;
+  getRepoBranches(owner: string, repo: string, paginate?: Paginate) {
+    return this.getRepoData('GET /repos/{owner}/{repo}/branches', { owner, repo, ...paginate });
+  }
 
-    let obj = {
-      per_page: 0,
-      page: 0,
-    };
-    // if (paginate?.limit && !paginate?.skip) {
-    //   obj.per_page = paginate.limit;
-    //   obj.page = 1;
-    // } else if (!paginate?.limit && paginate?.skip) {
+  async getRepoData(route: keyof PaginatingEndpoints, data: GithubData & Paginate) {
+    const { owner, repo, org, skip, limit } = data;
 
-    // }
-
-    const response = await this.octokit.paginate(route, {
-      owner,
-      repo,
-      org,
-      per_page: paginate?.skip,
-      page: paginate?.skip ? 2 : undefined,
-    }, (response, done) => {
-      const { data } = response;
-
-      if (paginate?.limit) {
-        count += data.length;
-
-        if (count >= paginate.limit) {
-          done();
-        }
-        return data.slice(0, paginate.limit);
-      }
-      return data;
-    });
+    const response = await this.octokit.paginate(
+      route,
+      {
+        owner,
+        repo,
+        org,
+        per_page: skip,
+        page: skip ? 2 : undefined,
+      },
+      paginateMapFn<Endpoints[typeof route]>(limit)
+    );
     return response;
   }
 
-  async getAccessTokenByCode(code: string): Promise<AccessTokenResponse> {
+  async getTokenByCode(code: string): Promise<AccessTokenResponse | string> {
     const { data } = await this.octokit.request(
-      `POST https://github.com/login/oauth/access_token?client_id=${githubClientId}&client_secret=${githubClientSecret}&code=${code}`
+      `POST https://github.com/login/oauth/access_token?client_id=${GITHUB_CLIENT_ID}&client_secret=${GITHUB_CLIENT_SECRET}&code=${code}`
     );
     if (data?.error) {
-      throw new LogicError(ErrorCode.AuthExpired, data.error_description);
+      return data?.error_description as string;
     }
     return data as AccessTokenResponse;
   }
 
-  // #TODO: If user is not found
-  async getUserFromAccessToken(token: string) {
+  async getUserByToken(token: string) {
     const { data } = await this.octokit.request('GET /user', {
       headers: {
-        Authorization: `token ${token}`
-      }
+        Authorization: `token ${token}`,
+      },
     });
     return data;
   }
+}
+
+export function paginateMapFn<T>(limit: Optimal<number>) {
+  return (
+    response: OctokitResponse<PaginationResults<['response'] extends keyof T ? T : unknown>>,
+    done: () => void
+  ) => {
+    const { data } = response;
+    let count = 0;
+
+    if (limit) {
+      count += data.length;
+
+      if (count >= limit) {
+        done();
+      }
+      return data.slice(0, limit);
+    }
+    return data;
+  };
 }

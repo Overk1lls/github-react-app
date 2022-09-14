@@ -1,6 +1,5 @@
 export enum ErrorCode {
   JsonBad = 'json.bad',
-  QueryBad = 'query.bad',
 
   AuthExpired = 'auth.expired',
   AuthNo = 'auth.no',
@@ -11,4 +10,4 @@ export enum ErrorCode {
   Server = 'server',
 }
 
-export type ServerErrorCode = | ErrorCode.Server;
+export type ServerErrorCode = ErrorCode.Server;

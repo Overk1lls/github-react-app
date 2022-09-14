@@ -3,3 +3,8 @@ export enum Parameters {
   Repo = 'repo',
   Org = 'org',
 }
+
+export enum QueryParams {
+  Skip = 'skip',
+  Limit = 'limit',
+}

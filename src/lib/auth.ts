@@ -1,6 +1,6 @@
-import { Request } from "express";
-import { ErrorCode } from "./codes";
-import { LogicError } from "./logic.error";
+import { Request } from 'express';
+import { ErrorCode } from '../errors/codes';
+import { LogicError } from '../errors/logic.error';
 
 const bearerRegex = /^Bearer +/;
 

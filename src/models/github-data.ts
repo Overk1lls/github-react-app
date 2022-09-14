@@ -1,5 +1,5 @@
 export interface GithubData {
   owner?: string;
-  repository?: string;
-  organization?: string;
+  repo?: string;
+  org?: string;
 }

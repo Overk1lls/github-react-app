@@ -1,13 +1,17 @@
-import { config, isNotProduction } from "./lib/config";
-import { createApp } from "./middlewares";
+import 'reflect-metadata';
+import './controllers/auth.controller';
+import './controllers/repo.controller';
+import './controllers/user.controller';
+import { config, isNotProduction } from './lib/config';
+import { createApp } from './middlewares/app';
 
 async function start() {
   console.log((isNotProduction() ? 'Development' : 'Production') + ' environment');
 
-  const { port } = config;
+  const { PORT } = config;
   const app = createApp();
 
-  app.listen(port, () => console.log(`App is running on port: ${port}`));
+  app.listen(PORT, () => console.log(`App is running on port: ${PORT}`));
 }
 
 start().catch(console.error);

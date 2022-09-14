@@ -1,4 +1,5 @@
 export type Nullable<T> = T | null;
+export type Optimal<T> = T | undefined;
 export type NonOptimal<T> = T extends undefined ? never : T;
 
 export function as<T>(value: any): value is T {
