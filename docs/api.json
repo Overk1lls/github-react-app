@@ -1,6 +1,6 @@
 {
   "openapi": "3.0.3",
-  "info": { 
+  "info": {
     "version": "1.0.0",
     "title": "Github React App",
     "description": "A simple app to work with Github and test skills",
@@ -50,22 +50,16 @@
         "operationId": "getBranches",
         "parameters": [
           {
-            "in": "path",
-            "name": "owner",
-            "schema": {
-              "type": "string"
-            },
-            "description": "The name of a repository owner",
-            "required": "true"
+            "$ref": "#/components/parameters/Owner"
           },
           {
-            "in": "path",
-            "name": "repo",
-            "schema": {
-              "type": "string"
-            },
-            "description": "The name of a repository",
-            "required": "true"
+            "$ref": "#/components/parameters/Repo"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Skip"
           }
         ],
         "responses": {
@@ -105,22 +99,16 @@
         "operationId": "getCommits",
         "parameters": [
           {
-            "in": "path",
-            "name": "owner",
-            "schema": {
-              "type": "string"
-            },
-            "description": "The name of a repository owner",
-            "required": "true"
+            "$ref": "#/components/parameters/Owner"
           },
           {
-            "in": "path",
-            "name": "repo",
-            "schema": {
-              "type": "string"
-            },
-            "description": "The name of a repository",
-            "required": "true"
+            "$ref": "#/components/parameters/Repo"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Skip"
           }
         ],
         "responses": {
@@ -160,13 +148,13 @@
         "operationId": "getRepos",
         "parameters": [
           {
-            "in": "path",
-            "name": "org",
-            "schema": {
-              "type": "string"
-            },
-            "description": "The name of an organization",
-            "required": "true"
+            "$ref": "#/components/parameters/Org"
+          },
+          {
+            "$ref": "#/components/parameters/Skip"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
           }
         ],
         "responses": {
@@ -405,6 +393,57 @@
             "type": "string"
           }
         }
+      }
+    },
+    "parameters": {
+      "Skip": {
+        "in": "query",
+        "name": "skip",
+        "description": "The number of items to skip",
+        "schema": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "default": 0
+        }
+      },
+      "Limit": {
+        "in": "query",
+        "name": "limit",
+        "description": "The number of items to limit to",
+        "schema": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "default": 0
+        }
+      },
+      "Owner": {
+        "in": "path",
+        "name": "owner",
+        "description": "The name of a repository owner",
+        "schema": {
+          "type": "string"
+        },
+        "required": true
+      },
+      "Repo": {
+        "in": "path",
+        "name": "repo",
+        "description": "The name of a repository",
+        "schema": {
+          "type": "string"
+        },
+        "required": true
+      },
+      "Org": {
+        "in": "path",
+        "name": "org",
+        "schema": {
+          "type": "string"
+        },
+        "description": "The name of an organization",
+        "required": "true"
       }
     }
   }
