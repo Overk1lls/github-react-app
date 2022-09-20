@@ -10,4 +10,4 @@ export enum ErrorCode {
   Server = 'server',
 }
 
-export type ServerErrorCode = | ErrorCode.Server;
+export type ServerErrorCode = ErrorCode.Server;

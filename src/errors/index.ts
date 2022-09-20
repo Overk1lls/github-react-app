@@ -1,9 +1,9 @@
-import { AxiosError } from "axios";
-import { as, NonOptimal, SerializePropertyValue } from "../lib/types";
-import { ErrorCode } from "./codes";
+import { AxiosError } from 'axios';
+import { as, NonOptimal, SerializePropertyValue } from '../lib/types';
+import { ErrorCode } from './codes';
 
 export interface SerializedError {
-  name?: Error['message'];
+  name?: Error['name'];
   message?: Error['message'];
   stack?: Error['stack'];
   code?: ErrorCode;
@@ -33,7 +33,7 @@ export type ErrorSerializationProperties = Record<string, SerializePropertyValue
   code?: SerializePropertyValue | boolean;
   cause?: SerializePropertyValue | boolean;
   [includeHttp]: boolean | string;
-}
+};
 
 export function serializeError(error: any, properties?: ErrorSerializationProperties) {
   const serialized: SerializedError = {};
@@ -81,13 +81,12 @@ export function serializeError(error: any, properties?: ErrorSerializationProper
   return serialized;
 }
 
-function extractHttpError(error: any) {
+export function extractHttpError(error: any) {
   if (error.response || error.request) {
     const http: SerializedError['http'] = {};
 
     if (error.request) {
       const req = error.request as AxiosError['request'];
-
       http.request = {
         url: req.protocol + '//' + req.host + req.path,
       };

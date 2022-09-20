@@ -13,7 +13,7 @@ export const isNotProduction = (): boolean => {
 };
 
 const envConfig = loadConfig({
-  path: appRootPath.resolve('./config/.env'),
+  path: appRootPath.resolve('./config/.env') || appRootPath.resolve('./.env'),
   debug: isNotProduction(),
 });
 
@@ -26,13 +26,16 @@ if (loadError) {
   }
 }
 
-const getConfig = (): Config => {
-  ['PORT', 'GITHUB_TOKEN', 'GITHUB_CLIENT_ID', 'GITHUB_CLIENT_SECRET'].forEach((variable) => {
+function getConfig(): Config {
+  ['GITHUB_TOKEN', 'GITHUB_CLIENT_ID', 'GITHUB_CLIENT_SECRET'].forEach((variable) => {
     if (!process.env[variable]) {
       throw new Error(`The environment variable '${variable}' is missing!`);
     }
   });
-  return envConfig.parsed as unknown as Config;
-};
+  return {
+    ...envConfig.parsed,
+    PORT: envConfig.parsed?.PORT ? parseInt(envConfig?.parsed?.PORT) : 8080,
+  } as Config;
+}
 
 export const config: Config = getConfig();

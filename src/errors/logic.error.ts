@@ -1,5 +1,5 @@
-import { ErrorSerializationProperties, includeHttp, SerializedError, serializeError } from ".";
-import { ErrorCode } from "./codes";
+import { ErrorSerializationProperties, includeHttp, SerializedError, serializeError } from '.';
+import { ErrorCode } from './codes';
 
 export interface ILogicError {
   code: ErrorCode;
@@ -23,7 +23,6 @@ export function getErrorSerializationProperties(debug: boolean): ErrorSerializat
     name: debug,
     stack: debug,
     cause: debug,
-    message: debug,
     [includeHttp]: debug,
   };
 }
