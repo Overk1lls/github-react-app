@@ -1,5 +1,5 @@
-import { Request } from "express";
-import { Paginate } from "../services/octokit.service";
+import { Request } from 'express';
+import { Paginate } from '../services/octokit.service';
 
 export function getPaginateParamsFromQuery(req: Request): Paginate {
   const { skip, limit } = req.query;
