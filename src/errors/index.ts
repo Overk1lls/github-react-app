@@ -51,7 +51,7 @@ export function serializeError(error: any, properties?: ErrorSerializationProper
   }
 
   if (typeof props[includeHttp] === 'string') {
-    const property = props[includeHttp] as string;
+    const property = props[includeHttp];
     if (props[property]) {
       throw new TypeError(
         `HTTP error serialization conflict: output property "${props[includeHttp]}" mentioned in the config.`
@@ -86,33 +86,35 @@ export function extractHttpError(error: any) {
     const http: SerializedError['http'] = {};
 
     if (error.request) {
-      const req = error.request as AxiosError['request'];
-      http.request = {
-        url: req.protocol + '//' + req.host + req.path,
-      };
-      if ('method' in req) {
-        http.request.method = req.method;
-      }
-      if (typeof req.getHeaders === 'function') {
-        http.request.headers = req.getHeaders();
-      }
+      http.request = extractErrorRequest(error);
     }
     if (error.response && as<ErrorResponse>(error.response)) {
-      const response = {} as NonOptimal<NonOptimal<SerializedError['http']>['response']>;
-      let isResponseEmpty = true;
-
-      if ('data' in error.response) {
-        response.body = error.response.data;
-        isResponseEmpty = false;
-      }
-      if ('headers' in error.response) {
-        response.headers = error.response.headers;
-        isResponseEmpty = false;
-      }
-      if (!isResponseEmpty) {
-        http.response = response;
-      }
+      http.response = extractErrorResponse(error);
     }
     return http;
   }
+}
+
+function extractErrorRequest(error: any) {
+  const { request } = error;
+  return {
+    url: request.protocol + '//' + request.host + request.path,
+    method: request.method,
+    headers: typeof request.getHeaders === 'function' ? request.getHeaders() : undefined,
+  };
+}
+
+function extractErrorResponse(error: any) {
+  const response = {} as NonOptimal<NonOptimal<SerializedError['http']>['response']>;
+  let isResponseEmpty = true;
+
+  if ('data' in error.response) {
+    response.body = error.response.data;
+    isResponseEmpty = false;
+  }
+  if ('headers' in error.response) {
+    response.headers = error.response.headers;
+    isResponseEmpty = false;
+  }
+  return isResponseEmpty ? undefined : response;
 }
