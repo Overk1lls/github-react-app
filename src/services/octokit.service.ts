@@ -8,7 +8,7 @@ import type { OctokitResponse, Endpoints } from '@octokit/types';
 import type { PaginatingEndpoints } from '@octokit/plugin-paginate-rest';
 import type { PaginationResults } from '@octokit/plugin-paginate-rest/dist-types/types';
 
-const { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } = config;
+const { AUTH_CLIENT_ID: GITHUB_CLIENT_ID, AUTH_CLIENT_SECRET: GITHUB_CLIENT_SECRET } = config;
 
 export interface Paginate {
   skip?: number;

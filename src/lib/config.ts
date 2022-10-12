@@ -3,9 +3,9 @@ import appRootPath from 'app-root-path';
 
 interface Config {
   PORT: number;
-  GITHUB_TOKEN: string;
-  GITHUB_CLIENT_ID: string;
-  GITHUB_CLIENT_SECRET: string;
+  OCTOKIT_TOKEN: string;
+  AUTH_CLIENT_ID: string;
+  AUTH_CLIENT_SECRET: string;
 }
 
 export const isNotProduction = (): boolean => {
@@ -27,7 +27,7 @@ if (loadError) {
 }
 
 function getConfig(): Config {
-  ['GITHUB_TOKEN', 'GITHUB_CLIENT_ID', 'GITHUB_CLIENT_SECRET'].forEach((variable) => {
+  ['OCTOKIT_TOKEN', 'AUTH_CLIENT_ID', 'AUTH_CLIENT_SECRET'].forEach((variable) => {
     if (!process.env[variable]) {
       throw new Error(`The environment variable '${variable}' is missing!`);
     }

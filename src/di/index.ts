@@ -19,7 +19,7 @@ class MainDi extends Di {
       autoBindInjectable: true,
     });
 
-    container.bind<Optimal<string>>(types.OctokitToken).toConstantValue(config.GITHUB_TOKEN);
+    container.bind<Optimal<string>>(types.OctokitToken).toConstantValue(config.OCTOKIT_TOKEN);
 
     container.bind<OctokitService>(OctokitService).toSelf();
 

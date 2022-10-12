@@ -2,10 +2,10 @@
   "name": "github-react-app",
   "version": "1.0.0",
   "description": "A simple full-stack application to work with Github",
-  "main": "./build/index.js",
+  "main": "./build/src/index.js",
   "scripts": {
     "build": "rimraf ./build && tsc",
-    "start": "node ./build/index.js",
+    "start": "node ./build/src/index.js",
     "start:dev": "ts-node-dev ./src/index.ts",
     "test": "jest",
     "lint": "eslint . --ext .ts",
@@ -38,6 +38,7 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
+    "@babel/plugin-proposal-decorators": "^7.19.3",
     "@octokit/request-error": "^3.0.1",
     "app-root-path": "^3.1.0",
     "axios": "^0.27.2",
