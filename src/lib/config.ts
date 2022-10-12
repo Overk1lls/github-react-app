@@ -34,8 +34,17 @@ function getConfig(): Config {
   });
   return {
     ...envConfig.parsed,
-    PORT: envConfig.parsed?.PORT ? parseInt(envConfig?.parsed?.PORT) : 8080,
+    PORT: getPort(),
   } as Config;
+}
+
+function getPort(): number {
+  if (envConfig.parsed?.PORT) {
+    return parseInt(envConfig.parsed.PORT);
+  } else if (process.env.PORT) {
+    return parseInt(process.env.PORT);
+  }
+  return 8080;
 }
 
 export const config: Config = getConfig();
