@@ -1,4 +1,5 @@
 import { config as loadConfig } from 'dotenv';
+import { LogLevel } from '@nestjs/common';
 import appRootPath from 'app-root-path';
 
 interface Config {
@@ -6,6 +7,10 @@ interface Config {
   OCTOKIT_TOKEN: string;
   AUTH_CLIENT_ID: string;
   AUTH_CLIENT_SECRET: string;
+}
+
+export function getLogCategories(): LogLevel[] {
+  return isNotProduction() ? ['debug', 'error', 'log', 'warn'] : ['error', 'warn', 'log'];
 }
 
 export const isNotProduction = (): boolean => {
