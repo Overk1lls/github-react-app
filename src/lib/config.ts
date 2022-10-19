@@ -7,6 +7,7 @@ interface Config {
   OCTOKIT_TOKEN: string;
   AUTH_CLIENT_ID: string;
   AUTH_CLIENT_SECRET: string;
+  ORIGIN_URL: string;
 }
 
 export function getLogCategories(): LogLevel[] {
@@ -32,7 +33,7 @@ if (loadError) {
 }
 
 function getConfig(): Config {
-  ['OCTOKIT_TOKEN', 'AUTH_CLIENT_ID', 'AUTH_CLIENT_SECRET'].forEach((variable) => {
+  ['OCTOKIT_TOKEN', 'AUTH_CLIENT_ID', 'AUTH_CLIENT_SECRET', 'ORIGIN_URL'].forEach((variable) => {
     if (!process.env[variable]) {
       throw new Error(`The environment variable '${variable}' is missing!`);
     }

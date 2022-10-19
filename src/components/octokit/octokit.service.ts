@@ -28,10 +28,7 @@ export class OctokitService {
     return this.octokit;
   }
 
-  async getTokenByCode(code?: string) {
-    if (!code) {
-      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
-    }
+  async getTokenByCode(code: string) {
     const { data } = await this.octokit.request(
       `POST https://github.com/login/oauth/access_token?client_id=${AUTH_CLIENT_ID}&client_secret=${AUTH_CLIENT_SECRET}&code=${code}`
     );
@@ -50,8 +47,8 @@ export class OctokitService {
     return data;
   }
 
-  getReposByOrg(token: string, org: string, pagination: Pagination) {
-    return this.octokit.paginate(
+  async getReposByOrg(token: string, org: string, pagination: Pagination) {
+    const repos = await this.octokit.paginate(
       this.octokit.rest.repos.listForOrg,
       {
         org,
@@ -61,6 +58,7 @@ export class OctokitService {
       },
       paginationMapFn(pagination)
     );
+    return repos;
   }
 
   getRepoCommits(token: string, data: GithubRepoData, pagination: Pagination) {
