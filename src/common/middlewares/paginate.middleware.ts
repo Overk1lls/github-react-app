@@ -7,7 +7,7 @@ export interface RequestWithPagination extends Request {
 }
 
 @Injectable()
-export class PaginateMiddleware implements NestMiddleware {
+export class PaginationMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const pagination = getPaginationParamsFromQuery(req);
     const request = req as RequestWithPagination;

@@ -1,4 +1,4 @@
-import { Injectable, Inject, Optional, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, Inject, Optional, ForbiddenException } from '@nestjs/common';
 import { PaginationResults } from '@octokit/plugin-paginate-rest/dist-types/types';
 import { OctokitResponse } from '@octokit/types';
 import { Octokit } from 'octokit';
@@ -33,7 +33,7 @@ export class OctokitService {
       `POST https://github.com/login/oauth/access_token?client_id=${AUTH_CLIENT_ID}&client_secret=${AUTH_CLIENT_SECRET}&code=${code}`
     );
     if (data?.error) {
-      throw new HttpException(data?.error_description, HttpStatus.FORBIDDEN);
+      throw new ForbiddenException(data.error, data?.error_description);
     }
     return data as AccessTokenResponse;
   }

@@ -1,19 +1,19 @@
 import { Request } from 'express';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { UnauthorizedException } from '@nestjs/common';
 
 const bearerRegex = /^Bearer +/;
 
 export function getTokenFromRequest(req: Request) {
   const { authorization } = req.headers;
   if (typeof authorization !== 'string') {
-    throw new HttpException('Bad authentication (unauthorized)', HttpStatus.UNAUTHORIZED);
+    throw new UnauthorizedException();
   }
   return getTokenFromAuthString(authorization);
 }
 
 export function getTokenFromAuthString(str: string) {
   if (!bearerRegex.test(str)) {
-    throw new HttpException('Bad authentication scheme', HttpStatus.UNAUTHORIZED);
+    throw new UnauthorizedException('Bad authentication scheme')
   }
   return str.replace(bearerRegex, '');
 }
