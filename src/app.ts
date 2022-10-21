@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { RequestExceptionsFilter } from './common/filters/exception.filter';
+import { RequestExceptionsFilter } from './common/filters/request-exception.filter';
 import { getLogCategories } from './lib/config';
 import { createApiDocument } from './lib/swagger';
 

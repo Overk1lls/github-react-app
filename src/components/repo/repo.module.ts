@@ -1,5 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { PaginationMiddleware } from '../../common/middlewares/paginate.middleware';
+import { PaginationMiddleware } from '../../common/middlewares/pagination.middleware';
 import { OctokitModule } from '../octokit/octokit.module';
 import { RepoController } from './repo.controller';
 

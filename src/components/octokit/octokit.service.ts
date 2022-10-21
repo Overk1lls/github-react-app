@@ -8,11 +8,16 @@ import { config } from '../../lib/config';
 
 const { AUTH_CLIENT_ID, AUTH_CLIENT_SECRET } = config;
 
+interface RequestTokenError {
+  error: any;
+  error_description: string;
+}
+
 @Injectable()
 export class OctokitService {
   private readonly octokit: Octokit;
 
-  constructor(@Optional() @Inject<string>() token: string) {
+  constructor(@Optional() @Inject<string>() token?: string) {
     this.octokit = new Octokit({
       auth: token,
       log: {
@@ -29,19 +34,19 @@ export class OctokitService {
   }
 
   async getTokenByCode(code: string) {
-    const { data } = await this.octokit.request(
+    const { data } = await this.octokit.request<AccessTokenResponse | RequestTokenError, any>(
       `POST https://github.com/login/oauth/access_token?client_id=${AUTH_CLIENT_ID}&client_secret=${AUTH_CLIENT_SECRET}&code=${code}`
     );
-    if (data?.error) {
-      throw new ForbiddenException(data.error, data?.error_description);
+    if ('error' in data) {
+      throw new ForbiddenException(data.error, data.error_description);
     }
-    return data as AccessTokenResponse;
+    return data;
   }
 
   async getUserByToken(token: string) {
     const { data } = await this.octokit.request('GET /user', {
       headers: {
-        Authorization: `token ${token}`,
+        authorization: `token ${token}`,
       },
     });
     return data;
@@ -90,10 +95,11 @@ export class OctokitService {
   }
 }
 
-function paginationMapFn<T>(pagination: Pagination) {
+export function paginationMapFn<T>(pagination: Pagination) {
   return (response: OctokitResponse<PaginationResults<T>>, done: () => void) => {
     const { data } = response;
     const { limit, skip } = pagination;
+    const startIdx = skip ?? 0;
     let count = 0;
 
     if (limit) {
@@ -102,8 +108,8 @@ function paginationMapFn<T>(pagination: Pagination) {
       if (count >= limit) {
         done();
       }
-      return data.slice(skip ?? 0, limit);
+      return data.slice(startIdx, startIdx + limit);
     }
-    return data.slice(skip ?? 0);
+    return data.slice(startIdx);
   };
 }

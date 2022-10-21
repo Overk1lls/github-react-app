@@ -19,9 +19,8 @@ export class PaginationMiddleware implements NestMiddleware {
 }
 
 function getPaginationParamsFromQuery(req: Request): Pagination {
-  const { skip, limit } = req.query;
   return {
-    skip: skip ? parseInt(skip.toString()) : undefined,
-    limit: limit ? parseInt(limit.toString()) : undefined,
+    skip: req.query?.skip ? parseInt(req.query.skip.toString()) : undefined,
+    limit: req.query?.limit ? parseInt(req.query.limit.toString()) : undefined,
   };
 }
