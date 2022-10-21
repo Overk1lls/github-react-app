@@ -1,51 +1,40 @@
-import 'reflect-metadata';
-import { createRequest } from 'node-mocks-http';
-import { OctokitService } from '../../src/services/octokit.service';
-import { UserController } from '../../src/controllers/user.controller';
-import { mockUser } from '../__mock__/index';
-import { LogicError } from '../../src/errors/logic.error';
+import { Test } from '@nestjs/testing';
+import { Request } from 'express';
+import { OctokitService } from '../../src/components/octokit/octokit.service';
+import { UserController } from '../../src/components/user/user.controller';
+import { mockToken, mockUser } from '../__mock__';
 
 describe('UserController', () => {
-  const octokitService = new OctokitService();
-  const userController = new UserController(octokitService);
+  let octokitService: OctokitService;
+  let userController: UserController;
+
+  beforeEach(async () => {
+    const moduleRef = await Test.createTestingModule({
+      controllers: [UserController],
+      providers: [OctokitService],
+    }).compile();
+
+    octokitService = moduleRef.get<OctokitService>(OctokitService);
+    userController = moduleRef.get<UserController>(UserController);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
   describe('getUser', () => {
-    const spyOnUserByTokenFn = jest
-      .spyOn(octokitService, 'getUserByToken')
-      .mockResolvedValue(mockUser);
-
-    test('proper token - 200 with a token', async () => {
-      const token = 'token';
-      const req = createRequest({
+    test('should return a user', async () => {
+      const req = {
         headers: {
-          authorization: 'Bearer ' + token,
+          authorization: 'Bearer ' + mockToken,
         },
-      });
+      } as Request;
+      jest.spyOn(octokitService, 'getUserByToken').mockResolvedValue(mockUser);
 
-      const { json } = await userController.getUser(req);
+      const result = await userController.getUser(req);
 
-      expect(json).toEqual(mockUser);
-      expect(spyOnUserByTokenFn).toHaveBeenLastCalledWith(token);
-    });
-
-    test('bad token - LogicError', async () => {
-      const req = createRequest();
-
-      const invokeFn = () => userController.getUser(req);
-
-      await expect(invokeFn()).rejects.toThrowError(LogicError);
-    });
-
-    test('bad token scheme - LogicError', async () => {
-      const req = createRequest({
-        headers: {
-          authorization: 'not-bearer token',
-        },
-      });
-
-      const invokeFn = () => userController.getUser(req);
-
-      await expect(invokeFn()).rejects.toThrowError(LogicError);
+      expect(result).toEqual(mockUser);
+      expect(octokitService.getUserByToken).toHaveBeenCalledWith(mockToken);
     });
   });
 });
