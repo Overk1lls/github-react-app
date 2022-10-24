@@ -1,5 +1,5 @@
-import { createApp } from '../app';
-import { config, isNotProduction } from '../lib/config';
+import { createApp } from './app';
+import { config, isNotProduction } from './lib/config';
 
 const { PORT, ORIGIN_URL } = config;
 
