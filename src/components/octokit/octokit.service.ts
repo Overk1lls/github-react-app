@@ -1,12 +1,11 @@
-import { Injectable, Inject, Optional, ForbiddenException } from '@nestjs/common';
+import { Injectable, Inject, ForbiddenException } from '@nestjs/common';
+import { ConfigType } from '@nestjs/config';
 import { PaginationResults } from '@octokit/plugin-paginate-rest/dist-types/types';
 import { OctokitResponse } from '@octokit/types';
 import { Octokit } from 'octokit';
 import { AccessTokenResponse, Pagination } from '../../common/models';
 import { GithubRepoData } from '../../common/models/github-data';
-import { config } from '../../lib/config';
-
-const { AUTH_CLIENT_ID, AUTH_CLIENT_SECRET } = config;
+import { githubConfig } from '../../lib/config';
 
 interface RequestTokenError {
   error: any;
@@ -17,9 +16,11 @@ interface RequestTokenError {
 export class OctokitService {
   private readonly octokit: Octokit;
 
-  constructor(@Optional() @Inject<string>() token?: string) {
+  constructor(
+    @Inject(githubConfig.KEY) private readonly octokitConfig: ConfigType<typeof githubConfig>
+  ) {
     this.octokit = new Octokit({
-      auth: token,
+      auth: this.octokitConfig.octokitToken,
       log: {
         debug: console.debug,
         info: console.info,
@@ -34,8 +35,10 @@ export class OctokitService {
   }
 
   async getTokenByCode(code: string) {
+    const { clientId, clientSecret } = this.octokitConfig;
+
     const { data } = await this.octokit.request<AccessTokenResponse | RequestTokenError, any>(
-      `POST https://github.com/login/oauth/access_token?client_id=${AUTH_CLIENT_ID}&client_secret=${AUTH_CLIENT_SECRET}&code=${code}`
+      `POST https://github.com/login/oauth/access_token?client_id=${clientId}&client_secret=${clientSecret}&code=${code}`
     );
     if ('error' in data) {
       throw new ForbiddenException(data.error, data.error_description);
