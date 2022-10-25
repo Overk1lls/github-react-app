@@ -1,8 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import {
-  PaginationMiddleware,
-  RequestWithPagination,
-} from '../../../src/common/middlewares/pagination.middleware';
+import { PaginationMiddleware, RequestWithPagination } from './pagination.middleware';
 
 const req = {} as Request;
 const res = {} as Response;

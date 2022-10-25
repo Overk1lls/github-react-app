@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import { UnauthorizedException } from '@nestjs/common';
-import { mockToken } from '../__mock__';
-import { getTokenFromAuthString, getTokenFromRequest } from '../../src/lib/auth';
+import { mockToken } from '../../test/__mock__';
+import { getTokenFromAuthString, getTokenFromRequest } from './auth';
 
 describe('lib/auth', () => {
   describe('getTokenFromRequest', () => {

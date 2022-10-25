@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { RequestError } from '@octokit/request-error';
-import { RequestExceptionsFilter } from '../../../src/common/filters/request-exception.filter';
+import { RequestExceptionsFilter } from './request-exception.filter';
 
 const mockJson = jest.fn();
 

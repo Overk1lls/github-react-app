@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import { Test } from '@nestjs/testing';
+import { ConfigModule } from '@nestjs/config';
 import { Octokit } from 'octokit';
 import { OctokitResponse } from '@octokit/types';
 import { PaginationResults } from '@octokit/plugin-paginate-rest/dist-types/types';
 import { RequestError } from '@octokit/request-error';
 import { ForbiddenException } from '@nestjs/common';
-import { OctokitService, paginationMapFn } from '../../src/components/octokit/octokit.service';
-import { AccessTokenResponse } from '../../src/common/models';
+import { OctokitService, paginationMapFn } from './octokit.service';
+import { AccessTokenResponse } from '../../common/models';
+import { githubConfig } from '../../lib/config';
 import {
   mockBranches,
   mockCode,
@@ -17,7 +19,7 @@ import {
   mockToken,
   mockTokenResponse,
   mockUser,
-} from '../__mock__';
+} from '../../../test/__mock__';
 
 describe('OctokitService', () => {
   let octokitService: OctokitService;
@@ -27,7 +29,15 @@ describe('OctokitService', () => {
   const repo = 'repo';
 
   beforeEach(async () => {
-    const moduleRef = await Test.createTestingModule({ providers: [OctokitService] }).compile();
+    const moduleRef = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          ignoreEnvFile: true,
+          load: [githubConfig],
+        }),
+      ],
+      providers: [OctokitService],
+    }).compile();
 
     octokitService = moduleRef.get<OctokitService>(OctokitService);
     octokit = octokitService.getOctokit;

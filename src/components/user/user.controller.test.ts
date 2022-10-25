@@ -1,8 +1,10 @@
 import { Test } from '@nestjs/testing';
+import { ConfigModule } from '@nestjs/config';
 import { Request } from 'express';
-import { OctokitService } from '../../src/components/octokit/octokit.service';
-import { UserController } from '../../src/components/user/user.controller';
-import { mockToken, mockUser } from '../__mock__';
+import { OctokitService } from '../octokit/octokit.service';
+import { UserController } from './user.controller';
+import { mockToken, mockUser } from '../../../test/__mock__';
+import { githubConfig } from '../../lib/config';
 
 describe('UserController', () => {
   let octokitService: OctokitService;
@@ -10,6 +12,12 @@ describe('UserController', () => {
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          ignoreEnvFile: true,
+          load: [githubConfig],
+        }),
+      ],
       controllers: [UserController],
       providers: [OctokitService],
     }).compile();

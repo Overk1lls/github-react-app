@@ -1,8 +1,10 @@
 import { Test } from '@nestjs/testing';
+import { ConfigModule } from '@nestjs/config';
 import { Request } from 'express';
-import { OctokitService } from '../../src/components/octokit/octokit.service';
-import { RepoController } from '../../src/components/repo/repo.controller';
-import { mockBranches, mockCommits, mockRepos, mockToken } from '../__mock__';
+import { OctokitService } from '../octokit/octokit.service';
+import { RepoController } from './repo.controller';
+import { mockBranches, mockCommits, mockRepos, mockToken } from '../../../test/__mock__';
+import { githubConfig } from '../../lib/config';
 
 describe('RepoController', () => {
   let repoController: RepoController;
@@ -16,6 +18,12 @@ describe('RepoController', () => {
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          ignoreEnvFile: true,
+          load: [githubConfig],
+        }),
+      ],
       controllers: [RepoController],
       providers: [OctokitService],
     }).compile();
