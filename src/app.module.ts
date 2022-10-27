@@ -1,11 +1,13 @@
 import joi from 'joi';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { AuthModule } from './components/auth/auth.module';
 import { OctokitModule } from './components/octokit/octokit.module';
 import { RepoModule } from './components/repo/repo.module';
 import { UserModule } from './components/user/user.module';
 import { githubConfig, httpConfig, isNotProduction } from './lib/config';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -22,10 +24,23 @@ import { githubConfig, httpConfig, isNotProduction } from './lib/config';
         ORIGIN_URL: joi.string(),
       }),
     }),
+    ThrottlerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        ttl: config.getOrThrow('THROTTLE_TTL'),
+        limit: config.getOrThrow('THROTTLE_LIMIT'),
+      }),
+    }),
     OctokitModule,
     AuthModule,
     RepoModule,
     UserModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class AppModule {}
