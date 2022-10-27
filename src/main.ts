@@ -1,11 +1,12 @@
 import 'source-map-support';
+import helmet from 'helmet';
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
+import { SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { getLogCategories, isNotProduction } from './lib/config';
 import { RequestExceptionsFilter } from './common/filters/request-exception.filter';
 import { createApiDocument } from './lib/swagger';
-import { SwaggerModule } from '@nestjs/swagger';
 
 export const apiPrefix = '/api/v1';
 
@@ -16,6 +17,7 @@ async function bootstrap() {
     logger: getLogCategories(),
     cors: { origin: true },
   });
+  app.use(helmet());
   app.setGlobalPrefix(apiPrefix);
   app.useGlobalFilters(new RequestExceptionsFilter());
 
