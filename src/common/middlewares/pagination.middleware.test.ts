@@ -6,50 +6,50 @@ const res = {} as Response;
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const next: NextFunction = () => {};
 
-describe('PaginationMiddleware', () => {
+describe('paginationMiddleware', () => {
   let middleware: PaginationMiddleware;
 
   beforeEach(async () => {
     middleware = new PaginationMiddleware();
   });
 
-  describe('Pagination use', () => {
-    test('should return request with both skip and limit undefined', () => {
+  describe('pagination use', () => {
+    it('should return request with both skip and limit undefined', () => {
       middleware.use(req, res, next);
 
-      expect((req as RequestWithPagination).pagination).toEqual({
+      expect((req as RequestWithPagination).pagination).toStrictEqual({
         skip: undefined,
         limit: undefined,
       });
     });
 
-    test('should return request with skip defined and limit undefined', () => {
+    it('should return request with skip defined and limit undefined', () => {
       req.query = {
         skip: '1',
       };
 
       middleware.use(req, res, next);
 
-      expect((req as RequestWithPagination).pagination).toEqual({
+      expect((req as RequestWithPagination).pagination).toStrictEqual({
         skip: 1,
         limit: undefined,
       });
     });
 
-    test('should return request with skip undefined and limit defined', () => {
+    it('should return request with skip undefined and limit defined', () => {
       req.query = {
         limit: '1',
       };
 
       middleware.use(req, res, next);
 
-      expect((req as RequestWithPagination).pagination).toEqual({
+      expect((req as RequestWithPagination).pagination).toStrictEqual({
         skip: undefined,
         limit: 1,
       });
     });
 
-    test('should return request with both skip and limit defined', () => {
+    it('should return request with both skip and limit defined', () => {
       req.query = {
         skip: '1',
         limit: '1',
@@ -57,7 +57,7 @@ describe('PaginationMiddleware', () => {
 
       middleware.use(req, res, next);
 
-      expect((req as RequestWithPagination).pagination).toEqual({
+      expect((req as RequestWithPagination).pagination).toStrictEqual({
         skip: 1,
         limit: 1,
       });

@@ -17,7 +17,7 @@ const mockHttpArgumentsHost = jest.fn().mockImplementation(() => ({
   getRequest: jest.fn(),
 }));
 
-describe('RequestExceptionsFilter', () => {
+describe('requestExceptionsFilter', () => {
   let filter: RequestExceptionsFilter;
 
   beforeEach(async () => {
@@ -28,7 +28,7 @@ describe('RequestExceptionsFilter', () => {
     filter = moduleRef.get<RequestExceptionsFilter>(RequestExceptionsFilter);
   });
 
-  test('should first', () => {
+  it('should catch RequestError with 401 status', () => {
     const error: RequestError = new RequestError('Bad credentials', 401, {
       request: {
         method: 'GET',
@@ -46,8 +46,8 @@ describe('RequestExceptionsFilter', () => {
       switchToWs: jest.fn(),
     });
 
-    expect(mockHttpArgumentsHost).toHaveBeenCalled();
-    expect(mockGetResponse).toHaveBeenCalled();
+    expect(mockHttpArgumentsHost).toHaveBeenCalledWith();
+    expect(mockGetResponse).toHaveBeenCalledWith();
     expect(mockStatus).toHaveBeenCalledWith(error.status);
     expect(mockJson).toHaveBeenCalledWith({
       message: error.message,

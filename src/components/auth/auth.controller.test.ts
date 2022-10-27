@@ -5,7 +5,7 @@ import { OctokitService } from '../octokit/octokit.service';
 import { mockCode, mockTokenResponse } from '../../../test/__mock__';
 import { githubConfig } from '../../lib/config';
 
-describe('AuthController', () => {
+describe('authController', () => {
   let authController: AuthController;
   let octokitService: OctokitService;
 
@@ -30,12 +30,14 @@ describe('AuthController', () => {
   });
 
   describe('auth', () => {
-    test('should return an access token', async () => {
+    it('should return an access token', async () => {
+      expect.hasAssertions();
+
       jest.spyOn(octokitService, 'getTokenByCode').mockResolvedValue(mockTokenResponse);
 
       const result = await authController.auth(mockCode);
 
-      expect(result).toEqual(
+      expect(result).toStrictEqual(
         expect.objectContaining({
           accessToken: mockTokenResponse.access_token,
         })

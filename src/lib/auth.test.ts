@@ -5,7 +5,7 @@ import { getTokenFromAuthString, getTokenFromRequest } from './auth';
 
 describe('lib/auth', () => {
   describe('getTokenFromRequest', () => {
-    test('should return a token', () => {
+    it('should return a token', () => {
       const req = {
         headers: {
           authorization: 'Bearer ' + mockToken,
@@ -17,17 +17,17 @@ describe('lib/auth', () => {
       expect(result).toBe(mockToken);
     });
 
-    test('should throw UnauthorizedException', () => {
+    it('should throw UnauthorizedException', () => {
       const req = {} as Request;
 
       const invokeFn = () => getTokenFromRequest(req);
 
-      expect(invokeFn).toThrowError(UnauthorizedException);
+      expect(invokeFn).toThrow(UnauthorizedException);
     });
   });
 
   describe('getTokenFromAuthString', () => {
-    test('should return a token', () => {
+    it('should return a token', () => {
       const string = 'Bearer ' + mockToken;
 
       const result = getTokenFromAuthString(string);
@@ -35,12 +35,12 @@ describe('lib/auth', () => {
       expect(result).toBe(mockToken);
     });
 
-    test('should throw UnauthorizedException', () => {
+    it('should throw UnauthorizedException', () => {
       const string = 'Not bearer';
 
       const invokeFn = () => getTokenFromAuthString(string);
 
-      expect(invokeFn).toThrowError(UnauthorizedException);
+      expect(invokeFn).toThrow(UnauthorizedException);
     });
   });
 });

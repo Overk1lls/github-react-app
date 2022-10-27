@@ -6,7 +6,7 @@ import { UserController } from './user.controller';
 import { mockToken, mockUser } from '../../../test/__mock__';
 import { githubConfig } from '../../lib/config';
 
-describe('UserController', () => {
+describe('userController', () => {
   let octokitService: OctokitService;
   let userController: UserController;
 
@@ -31,7 +31,9 @@ describe('UserController', () => {
   });
 
   describe('getUser', () => {
-    test('should return a user', async () => {
+    it('should return a user', async () => {
+      expect.assertions(2);
+
       const req = {
         headers: {
           authorization: 'Bearer ' + mockToken,
@@ -41,7 +43,7 @@ describe('UserController', () => {
 
       const result = await userController.getUser(req);
 
-      expect(result).toEqual(mockUser);
+      expect(result).toStrictEqual(mockUser);
       expect(octokitService.getUserByToken).toHaveBeenCalledWith(mockToken);
     });
   });

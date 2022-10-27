@@ -21,7 +21,7 @@ import {
   mockUser,
 } from '../../../test/__mock__';
 
-describe('OctokitService', () => {
+describe('octokitService', () => {
   let octokitService: OctokitService;
   let octokit: Octokit;
 
@@ -48,37 +48,46 @@ describe('OctokitService', () => {
   });
 
   describe('getTokenByCode', () => {
-    test('should return an access token', async () => {
+    it('should return an access token', async () => {
+      expect.assertions(2);
+
       jest.spyOn(octokit, 'request').mockResolvedValue({
         data: mockTokenResponse,
       } as OctokitResponse<AccessTokenResponse, 200>);
 
       const result = await octokitService.getTokenByCode(mockCode);
 
-      expect(result).toEqual(expect.objectContaining(mockTokenResponse));
-      expect(octokit.request).toHaveBeenCalled();
+      expect(result).toStrictEqual(expect.objectContaining(mockTokenResponse));
+      expect(octokit.request).toHaveBeenCalledWith<[string]>(
+        'POST https://github.com/login/oauth/access_token?client_id=undefined&client_secret=undefined&code=' +
+          mockCode
+      );
     });
 
-    test('should throw ForbiddenException', async () => {
+    it('should throw ForbiddenException', async () => {
+      expect.hasAssertions();
+
       jest.spyOn(octokit, 'request').mockResolvedValue({
         data: mockErrorResponse,
       } as OctokitResponse<typeof mockErrorResponse, any>);
 
       const invokeFn = () => octokitService.getTokenByCode(mockCode);
 
-      expect(invokeFn).rejects.toThrowError(ForbiddenException);
+      await expect(invokeFn).rejects.toThrow(ForbiddenException);
     });
   });
 
   describe('getUserByToken', () => {
-    test('should return a user', async () => {
+    it('should return a user', async () => {
+      expect.assertions(2);
+
       jest.spyOn(octokit, 'request').mockResolvedValue({
         data: mockUser,
       } as OctokitResponse<typeof mockUser, 200>);
 
       const result = await octokitService.getUserByToken(mockToken);
 
-      expect(result).toEqual(expect.objectContaining(mockUser));
+      expect(result).toStrictEqual(expect.objectContaining(mockUser));
       expect(octokit.request).toHaveBeenCalledWith('GET /user', {
         headers: {
           authorization: `token ${mockToken}`,
@@ -88,16 +97,20 @@ describe('OctokitService', () => {
   });
 
   describe('getReposByOrg', () => {
-    test('should return a list of repos', async () => {
+    it('should return a list of repos', async () => {
+      expect.assertions(2);
+
       jest.spyOn(octokit, 'paginate').mockResolvedValue(mockRepos);
 
       const result = await octokitService.getReposByOrg(mockToken, 'org', {});
 
-      expect(result).toEqual(expect.arrayContaining(mockRepos));
+      expect(result).toStrictEqual(expect.arrayContaining(mockRepos));
       expect(octokit.paginate).toHaveReturnedWith(Promise.resolve(mockRepos));
     });
 
-    test('should throw RequestError', async () => {
+    it('should throw RequestError', async () => {
+      expect.hasAssertions();
+
       jest.spyOn(octokit, 'paginate').mockRejectedValue(
         new RequestError('Bad credentials', 401, {
           request: {
@@ -110,10 +123,12 @@ describe('OctokitService', () => {
 
       const invokeFn = () => octokitService.getReposByOrg(mockToken, 'org', {});
 
-      expect(invokeFn).rejects.toThrowError(RequestError);
+      await expect(invokeFn).rejects.toThrow(RequestError);
     });
 
-    test('should throw NotFound exception', async () => {
+    it('should throw NotFound exception', async () => {
+      expect.hasAssertions();
+
       jest.spyOn(octokit, 'paginate').mockRejectedValue(
         new RequestError('NotFound', 404, {
           request: {
@@ -126,21 +141,25 @@ describe('OctokitService', () => {
 
       const invokeFn = () => octokitService.getReposByOrg(mockToken, 'org', {});
 
-      expect(invokeFn).rejects.toThrowError(RequestError);
+      await expect(invokeFn).rejects.toThrow(RequestError);
     });
   });
 
   describe('getRepoCommits', () => {
-    test('should return a list of commits', async () => {
+    it('should return a list of commits', async () => {
+      expect.assertions(2);
+
       jest.spyOn(octokit, 'paginate').mockResolvedValue(mockCommits);
 
       const result = await octokitService.getRepoCommits(mockToken, { owner, repo }, {});
 
-      expect(result).toEqual(expect.arrayContaining(mockCommits));
+      expect(result).toStrictEqual(expect.arrayContaining(mockCommits));
       expect(octokit.paginate).toHaveReturnedWith(Promise.resolve(mockCommits));
     });
 
-    test('should throw RequestError', async () => {
+    it('should throw RequestError', async () => {
+      expect.hasAssertions();
+
       jest.spyOn(octokit, 'paginate').mockRejectedValue(
         new RequestError('Bad credentials', 401, {
           request: {
@@ -153,10 +172,12 @@ describe('OctokitService', () => {
 
       const invokeFn = () => octokitService.getRepoCommits(mockToken, { owner, repo }, {});
 
-      expect(invokeFn).rejects.toThrowError(RequestError);
+      await expect(invokeFn).rejects.toThrow(RequestError);
     });
 
-    test('should throw NotFound exception', async () => {
+    it('should throw NotFound exception', async () => {
+      expect.hasAssertions();
+
       jest.spyOn(octokit, 'paginate').mockRejectedValue(
         new RequestError('NotFound', 404, {
           request: {
@@ -169,21 +190,25 @@ describe('OctokitService', () => {
 
       const invokeFn = () => octokitService.getRepoCommits(mockToken, { owner, repo }, {});
 
-      expect(invokeFn).rejects.toThrowError(RequestError);
+      await expect(invokeFn).rejects.toThrow(RequestError);
     });
   });
 
   describe('getRepoBranches', () => {
-    test('should return a list of branches', async () => {
+    it('should return a list of branches', async () => {
+      expect.assertions(2);
+
       jest.spyOn(octokit, 'paginate').mockResolvedValue(mockBranches);
 
       const result = await octokitService.getRepoBranches(mockToken, { owner, repo }, {});
 
-      expect(result).toEqual(expect.arrayContaining(mockBranches));
+      expect(result).toStrictEqual(expect.arrayContaining(mockBranches));
       expect(octokit.paginate).toHaveReturnedWith(Promise.resolve(mockBranches));
     });
 
-    test('should throw RequestError', async () => {
+    it('should throw RequestError', async () => {
+      expect.hasAssertions();
+
       jest.spyOn(octokit, 'paginate').mockRejectedValue(
         new RequestError('Bad credentials', 401, {
           request: {
@@ -196,10 +221,12 @@ describe('OctokitService', () => {
 
       const invokeFn = () => octokitService.getRepoBranches(mockToken, { owner, repo }, {});
 
-      expect(invokeFn).rejects.toThrowError(RequestError);
+      await expect(invokeFn).rejects.toThrow(RequestError);
     });
 
-    test('should throw NotFound exception', async () => {
+    it('should throw NotFound exception', async () => {
+      expect.hasAssertions();
+
       jest.spyOn(octokit, 'paginate').mockRejectedValue(
         new RequestError('NotFound', 404, {
           request: {
@@ -212,7 +239,7 @@ describe('OctokitService', () => {
 
       const invokeFn = () => octokitService.getRepoBranches(mockToken, { owner, repo }, {});
 
-      expect(invokeFn).rejects.toThrowError(RequestError);
+      await expect(invokeFn).rejects.toThrow(RequestError);
     });
   });
 
@@ -224,40 +251,48 @@ describe('OctokitService', () => {
       data: ['t', 'e', 's', 't'],
     };
 
-    test('no pagination', () => {
+    it('no pagination', () => {
+      expect.assertions(2);
+
       const invokeFn = paginationMapFn<string>({});
 
       const result = invokeFn(response, () => {});
 
-      expect(result).toEqual(expect.arrayContaining(response.data));
-      expect(result.length).toBe(response.data.length);
+      expect(result).toStrictEqual(expect.arrayContaining(response.data));
+      expect(result).toHaveLength(response.data.length);
     });
 
-    test('with skip defined and limit undefined', () => {
+    it('with skip defined and limit undefined', () => {
+      expect.assertions(2);
+
       const invokeFn = paginationMapFn<string>({ skip: 1 });
 
       const result = invokeFn(response, () => {});
 
-      expect(result).toEqual(expect.arrayContaining(response.data.slice(1)));
-      expect(result.length).toBe(response.data.slice(1).length);
+      expect(result).toStrictEqual(expect.arrayContaining(response.data.slice(1)));
+      expect(result).toHaveLength(response.data.slice(1).length);
     });
 
-    test('with skip undefined and limit defined', () => {
+    it('with skip undefined and limit defined', () => {
+      expect.assertions(2);
+
       const invokeFn = paginationMapFn<string>({ limit: 1 });
 
       const result = invokeFn(response, () => {});
 
-      expect(result).toEqual(expect.arrayContaining(response.data.slice(0, 1)));
-      expect(result.length).toBe(response.data.slice(0, 1).length);
+      expect(result).toStrictEqual(expect.arrayContaining(response.data.slice(0, 1)));
+      expect(result).toHaveLength(response.data.slice(0, 1).length);
     });
 
-    test('with both skip and limit defined', () => {
+    it('with both skip and limit defined', () => {
+      expect.assertions(2);
+
       const invokeFn = paginationMapFn<string>({ skip: 1, limit: 1 });
 
       const result = invokeFn(response, () => {});
 
-      expect(result).toEqual(expect.arrayContaining(response.data.slice(1, 2)));
-      expect(result.length).toBe(response.data.slice(1, 2).length);
+      expect(result).toStrictEqual(expect.arrayContaining(response.data.slice(1, 2)));
+      expect(result).toHaveLength(response.data.slice(1, 2).length);
     });
   });
 });
