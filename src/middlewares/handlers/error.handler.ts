@@ -38,6 +38,7 @@ function isRequestErrorDataMessage(
 ): octokitResponseData is Record<string, string> {
   return (
     octokitResponseData &&
+    typeof octokitResponseData === 'object' &&
     'message' in octokitResponseData &&
     typeof octokitResponseData.message === 'string'
   );
