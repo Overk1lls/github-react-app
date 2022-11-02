@@ -1,5 +1,4 @@
-import { Request } from 'express';
-import { BaseHttpController, controller, httpPost, request } from 'inversify-express-utils';
+import { BaseHttpController, controller, httpPost, requestBody } from 'inversify-express-utils';
 import { ErrorCode } from '../errors/codes';
 import { LogicError } from '../errors/logic.error';
 import { OctokitService } from '../services/octokit.service';
@@ -11,16 +10,13 @@ export class AuthController extends BaseHttpController {
   }
 
   @httpPost('/')
-  async auth(@request() req: Request) {
-    const { code } = req.body as { code: string };
+  async auth(@requestBody() body: Record<string, any>) {
+    const { code } = body as { code?: string };
     if (!code) {
       throw new LogicError(ErrorCode.AuthNo);
     }
 
     const response = await this.octokitService.getTokenByCode(code);
-    if (typeof response === 'string') {
-      throw new LogicError(ErrorCode.AuthExpired, response);
-    }
 
     return this.json({ accessToken: response }, 200);
   }

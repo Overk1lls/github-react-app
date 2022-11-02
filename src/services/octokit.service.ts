@@ -2,6 +2,8 @@ import { Octokit } from 'octokit';
 import { config } from '../lib/config';
 import { inject, injectable } from 'inversify';
 import { types } from '../di/types';
+import { LogicError } from '../errors/logic.error';
+import { ErrorCode } from '../errors/codes';
 import type { GithubData } from '../models/github-data';
 import type { Optimal } from '../lib/types';
 import type { OctokitResponse, Endpoints } from '@octokit/types';
@@ -19,6 +21,11 @@ export interface AccessTokenResponse {
   access_token: string;
   token_type: string;
   scope: string;
+}
+
+interface OctokitErrorResponse {
+  error: any;
+  error_description: string;
 }
 
 @injectable()
@@ -73,14 +80,14 @@ export class OctokitService {
     return response;
   }
 
-  async getTokenByCode(code: string): Promise<AccessTokenResponse | string> {
-    const { data } = await this.octokit.request(
+  async getTokenByCode(code: string): Promise<AccessTokenResponse> {
+    const { data } = await this.octokit.request<AccessTokenResponse | OctokitErrorResponse, any>(
       `POST https://github.com/login/oauth/access_token?client_id=${GITHUB_CLIENT_ID}&client_secret=${GITHUB_CLIENT_SECRET}&code=${code}`
     );
-    if (data?.error) {
-      return data?.error_description as string;
+    if ('error' in data) {
+      throw new LogicError(ErrorCode.AuthExpired, data.error_description);
     }
-    return data as AccessTokenResponse;
+    return data;
   }
 
   async getUserByToken(token: string) {
