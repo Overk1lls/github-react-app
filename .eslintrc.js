@@ -9,6 +9,8 @@ module.exports = {
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
+    'plugin:security/recommended',
+    'plugin:jest/all',
   ],
   root: true,
   env: {
@@ -25,8 +27,20 @@ module.exports = {
     'prettier/prettier': ['error', {
       singleQuote: true,
       printWidth: 100,
-      endOfLine: "auto",
+      endOfLine: 'auto',
     }],
-    eqeqeq: ['warn', 'always']
+    eqeqeq: ['warn', 'always'],
+    'security/detect-object-injection': 'off',
+    'jest/no-disabled-tests': 'warn',
+    'jest/no-focused-tests': 'error',
+    'jest/no-identical-title': 'error',
+    'jest/prefer-to-have-length': 'warn',
+    'jest/valid-expect': 'error',
+    'jest/prefer-expect-assertions': [
+      'warn',
+      { onlyFunctionsWithAsyncKeyword: true },
+    ],
+    'jest/no-hooks': 'off',
+    'jest/require-hook': 'off',
   },
 };

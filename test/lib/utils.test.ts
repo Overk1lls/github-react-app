@@ -3,10 +3,12 @@ import { getPaginateParamsFromQuery } from '../../src/lib/utils';
 
 describe('/lib/Utils', () => {
   it('test with skip & limit undefined', () => {
+    expect.hasAssertions();
+
     const req = createRequest();
     const result = getPaginateParamsFromQuery(req);
 
-    expect(result).toEqual(
+    expect(result).toStrictEqual(
       expect.objectContaining({
         skip: undefined,
         limit: undefined,
@@ -15,6 +17,8 @@ describe('/lib/Utils', () => {
   });
 
   it('test with skip undefined', () => {
+    expect.hasAssertions();
+
     const req = createRequest({
       query: {
         limit: 1,
@@ -22,7 +26,7 @@ describe('/lib/Utils', () => {
     });
     const result = getPaginateParamsFromQuery(req);
 
-    expect(result).toEqual(
+    expect(result).toStrictEqual(
       expect.objectContaining({
         limit: 1,
         skip: undefined,
@@ -31,6 +35,8 @@ describe('/lib/Utils', () => {
   });
 
   it('test with limit undefined', () => {
+    expect.hasAssertions();
+
     const req = createRequest({
       query: {
         skip: 1,
@@ -38,7 +44,7 @@ describe('/lib/Utils', () => {
     });
     const result = getPaginateParamsFromQuery(req);
 
-    expect(result).toEqual(
+    expect(result).toStrictEqual(
       expect.objectContaining({
         skip: 1,
         limit: undefined,

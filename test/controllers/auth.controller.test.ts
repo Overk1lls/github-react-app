@@ -1,54 +1,42 @@
 import 'reflect-metadata';
 import { OctokitService } from '../../src/services/octokit.service';
 import { AuthController } from '../../src/controllers/auth.controller';
-import { createRequest } from 'node-mocks-http';
 import { accessTokenResponse } from '../__mock__';
 import { LogicError } from '../../src/errors/logic.error';
 
-describe('AuthController', () => {
-  const octokitService = new OctokitService();
-  const authController = new AuthController(octokitService);
+let octokitService: OctokitService;
+let authController: AuthController;
+
+describe('authController', () => {
+  beforeEach(() => {
+    octokitService = new OctokitService();
+    authController = new AuthController(octokitService);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
 
   const code = 'test';
 
   describe('auth', () => {
     it('200 response', async () => {
-      const req = createRequest({
-        body: {
-          code,
-        },
-      });
+      expect.assertions(2);
 
-      const spyOnTokenFn = jest
-        .spyOn(octokitService, 'getTokenByCode')
-        .mockResolvedValue(accessTokenResponse);
+      jest.spyOn(octokitService, 'getTokenByCode').mockResolvedValue(accessTokenResponse);
 
-      const { json } = await authController.auth(req);
+      const { json } = await authController.auth({ code });
 
-      expect(json).toEqual(expect.objectContaining({ accessToken: accessTokenResponse }));
-      expect(spyOnTokenFn).toHaveBeenLastCalledWith(code);
+      expect(json).toStrictEqual(expect.objectContaining({ accessToken: accessTokenResponse }));
+      expect(octokitService.getTokenByCode).toHaveBeenCalledWith(code);
     });
 
     it('400 response', async () => {
-      const req = createRequest();
+      expect.hasAssertions();
 
-      const invokeFn = () => authController.auth(req);
+      const invokeFn = () => authController.auth({});
 
-      await expect(invokeFn).rejects.toThrowError(LogicError);
-    });
-
-    it('200 response', async () => {
-      const req = createRequest({
-        body: {
-          code,
-        },
-      });
-      const spyOnTokenFn = jest.spyOn(octokitService, 'getTokenByCode').mockResolvedValue('error');
-
-      const invokeFn = () => authController.auth(req);
-
-      await expect(invokeFn).rejects.toThrowError(LogicError);
-      expect(spyOnTokenFn).toHaveBeenLastCalledWith(req.body.code);
+      await expect(invokeFn).rejects.toThrow(LogicError);
     });
   });
 });

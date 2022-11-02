@@ -5,16 +5,25 @@ import { UserController } from '../../src/controllers/user.controller';
 import { mockUser } from '../__mock__/index';
 import { LogicError } from '../../src/errors/logic.error';
 
-describe('UserController', () => {
-  const octokitService = new OctokitService();
-  const userController = new UserController(octokitService);
+let octokitService: OctokitService;
+let userController: UserController;
+
+describe('userController', () => {
+  beforeEach(() => {
+    octokitService = new OctokitService();
+    userController = new UserController(octokitService);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
 
   describe('getUser', () => {
-    const spyOnUserByTokenFn = jest
-      .spyOn(octokitService, 'getUserByToken')
-      .mockResolvedValue(mockUser);
+    it('proper token - 200 with a token', async () => {
+      expect.assertions(2);
 
-    test('proper token - 200 with a token', async () => {
+      jest.spyOn(octokitService, 'getUserByToken').mockResolvedValue(mockUser);
+
       const token = 'token';
       const req = createRequest({
         headers: {
@@ -24,19 +33,23 @@ describe('UserController', () => {
 
       const { json } = await userController.getUser(req);
 
-      expect(json).toEqual(mockUser);
-      expect(spyOnUserByTokenFn).toHaveBeenLastCalledWith(token);
+      expect(json).toStrictEqual(mockUser);
+      expect(octokitService.getUserByToken).toHaveBeenCalledWith(token);
     });
 
-    test('bad token - LogicError', async () => {
+    it('bad token - LogicError', async () => {
+      expect.hasAssertions();
+
       const req = createRequest();
 
       const invokeFn = () => userController.getUser(req);
 
-      await expect(invokeFn()).rejects.toThrowError(LogicError);
+      await expect(invokeFn()).rejects.toThrow(LogicError);
     });
 
-    test('bad token scheme - LogicError', async () => {
+    it('bad token scheme - LogicError', async () => {
+      expect.hasAssertions();
+
       const req = createRequest({
         headers: {
           authorization: 'not-bearer token',
@@ -45,7 +58,7 @@ describe('UserController', () => {
 
       const invokeFn = () => userController.getUser(req);
 
-      await expect(invokeFn()).rejects.toThrowError(LogicError);
+      await expect(invokeFn()).rejects.toThrow(LogicError);
     });
   });
 });

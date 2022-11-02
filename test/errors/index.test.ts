@@ -3,14 +3,16 @@ import { ErrorCode } from '../../src/errors/codes';
 import { LogicError } from '../../src/errors/logic.error';
 import { AxiosError, AxiosResponse } from 'axios';
 
-describe('Errors lib functions test', () => {
+describe('errors lib functions test', () => {
   const error = new LogicError(ErrorCode.JsonBad, 'test');
 
   describe('toJsonObject test', () => {
     it('with debug on', () => {
+      expect.hasAssertions();
+
       const serializedError = error.toJsonObject(true);
 
-      expect(serializedError).toEqual(
+      expect(serializedError).toStrictEqual(
         expect.objectContaining({
           name: error.name,
           message: error.message,
@@ -21,9 +23,11 @@ describe('Errors lib functions test', () => {
     });
 
     it('with debug off', () => {
+      expect.hasAssertions();
+
       const serializedError = error.toJsonObject(false);
 
-      expect(serializedError).toEqual(
+      expect(serializedError).toStrictEqual(
         expect.objectContaining({
           message: error.message,
           code: ErrorCode.JsonBad,
@@ -34,14 +38,18 @@ describe('Errors lib functions test', () => {
 
   describe('serializeError function', () => {
     it('no error passed', () => {
+      expect.hasAssertions();
+
       const result = serializeError(undefined);
 
-      expect(result).toEqual({});
+      expect(result).toStrictEqual({});
     });
   });
 
   describe('extractHttpError function', () => {
     it('with request', () => {
+      expect.hasAssertions();
+
       const protocol = 'http';
       const host = 'example.com';
       const path = '/path';
@@ -68,7 +76,7 @@ describe('Errors lib functions test', () => {
       };
       const httpError = extractHttpError(serializedError['http']);
 
-      expect(httpError).toEqual(
+      expect(httpError).toStrictEqual(
         expect.objectContaining({
           request: {
             headers,

@@ -6,8 +6,9 @@ const config = {
     '^.+\\.ts?$': 'ts-jest',
     '\\.js$': '<rootDir>/node_modules/babel-jest',
   },
-  transformIgnorePatterns: ['<rootDir>/node_modules/'],
+  transformIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/build/'],
   testResultsProcessor: 'jest-sonar-reporter',
+  testPathIgnorePatterns: ['<rootDir>/build/'],
 };
 
 module.exports = config;

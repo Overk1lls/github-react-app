@@ -4,12 +4,14 @@ import { NextFunction } from 'express';
 import { requestErrorHandler } from '../../src/middlewares/handlers/error.handler';
 import { RequestError } from '@octokit/request-error';
 
-describe('Error Handler middleware', () => {
+describe('error Handler middleware', () => {
   const req = createRequest();
   const next: NextFunction = () => null;
 
   describe('should handle SyntaxError', () => {
     it('should handle a JSON error', () => {
+      expect.assertions(2);
+
       const error = new SyntaxError('JSON');
       const res = createResponse();
 
@@ -18,7 +20,7 @@ describe('Error Handler middleware', () => {
       const result = res._getJSONData();
 
       expect(res._getStatusCode()).toBe(400);
-      expect(result).toEqual(
+      expect(result).toStrictEqual(
         expect.objectContaining({
           code: ErrorCode.JsonBad,
           name: 'TypeError',
@@ -29,6 +31,8 @@ describe('Error Handler middleware', () => {
 
   describe('should handle RequestError', () => {
     it('should handle having error data message', () => {
+      expect.assertions(2);
+
       const error = new RequestError('not found', 404, {
         request: {
           headers: {},
@@ -51,7 +55,7 @@ describe('Error Handler middleware', () => {
       const result = res._getJSONData();
 
       expect(res._getStatusCode()).toBe(404);
-      expect(result).toEqual(
+      expect(result).toStrictEqual(
         expect.objectContaining({
           code: ErrorCode.NotFound,
           name: 'TypeError',
@@ -61,6 +65,8 @@ describe('Error Handler middleware', () => {
     });
 
     it('should handle not having error data message', () => {
+      expect.assertions(2);
+
       const error = new RequestError('not found', 404, {
         request: {
           headers: {},
@@ -81,7 +87,7 @@ describe('Error Handler middleware', () => {
       const result = res._getJSONData();
 
       expect(res._getStatusCode()).toBe(404);
-      expect(result).toEqual(
+      expect(result).toStrictEqual(
         expect.objectContaining({
           code: ErrorCode.NotFound,
           name: 'TypeError',
@@ -93,6 +99,8 @@ describe('Error Handler middleware', () => {
 
   describe('should handle ServerError', () => {
     it('default (500)', () => {
+      expect.assertions(2);
+
       const error = new Error('unknown error');
       const res = createResponse();
 
@@ -101,7 +109,7 @@ describe('Error Handler middleware', () => {
       const result = res._getJSONData();
 
       expect(res._getStatusCode()).toBe(500);
-      expect(result).toEqual(
+      expect(result).toStrictEqual(
         expect.objectContaining({
           code: ErrorCode.Server,
           name: 'TypeError',
