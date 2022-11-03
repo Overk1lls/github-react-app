@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios';
-import { as, NonOptimal, SerializePropertyValue } from '../lib/types';
+import { as, NonOptional, SerializePropertyValue } from '../lib/types';
 import { ErrorCode } from './codes';
 
 export interface SerializedError {
@@ -22,7 +22,7 @@ export interface SerializedError {
   [property: string]: any;
 }
 
-type ErrorResponse = NonOptimal<AxiosError['response']>;
+type ErrorResponse = NonOptional<AxiosError['response']>;
 
 export const includeHttp: unique symbol = Symbol('serializeError.http');
 
@@ -105,7 +105,7 @@ function extractErrorRequest(error: any) {
 }
 
 function extractErrorResponse(error: any) {
-  const response = {} as NonOptimal<NonOptimal<SerializedError['http']>['response']>;
+  const response = {} as NonOptional<NonOptional<SerializedError['http']>['response']>;
   let isResponseEmpty = true;
 
   if ('data' in error.response) {

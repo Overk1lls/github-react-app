@@ -5,7 +5,7 @@ import { types } from '../di/types';
 import { LogicError } from '../errors/logic.error';
 import { ErrorCode } from '../errors/codes';
 import type { GithubData } from '../models/github-data';
-import type { Optimal } from '../lib/types';
+import type { Optional } from '../lib/types';
 import type { OctokitResponse, Endpoints } from '@octokit/types';
 import type { PaginatingEndpoints } from '@octokit/plugin-paginate-rest';
 import type { PaginationResults } from '@octokit/plugin-paginate-rest/dist-types/types';
@@ -33,7 +33,7 @@ export class OctokitService {
   private octokit: Octokit;
 
   constructor(
-    @inject<Optimal<string>>(types.OctokitToken)
+    @inject<Optional<string>>(types.OctokitToken)
     token?: string
   ) {
     this.octokit = new Octokit({
@@ -100,7 +100,7 @@ export class OctokitService {
   }
 }
 
-export function paginateMapFn<T>(limit: Optimal<number>) {
+export function paginateMapFn<T>(limit: Optional<number>) {
   return (
     response: OctokitResponse<PaginationResults<['response'] extends keyof T ? T : unknown>>,
     done: () => void

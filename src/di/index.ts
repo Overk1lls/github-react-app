@@ -5,7 +5,7 @@ import { RepoController } from '../controllers/repo.controller';
 import { UserController } from '../controllers/user.controller';
 import { config } from '../lib/config';
 import { Di } from '../lib/di';
-import { Optimal } from '../lib/types';
+import { Optional } from '../lib/types';
 import { requestErrorHandler } from '../middlewares/handlers/error.handler';
 import { OctokitService } from '../services/octokit.service';
 import { types } from './types';
@@ -19,7 +19,7 @@ class MainDi extends Di {
       autoBindInjectable: true,
     });
 
-    container.bind<Optimal<string>>(types.OctokitToken).toConstantValue(config.OCTOKIT_TOKEN);
+    container.bind<Optional<string>>(types.OctokitToken).toConstantValue(config.OCTOKIT_TOKEN);
 
     container.bind<OctokitService>(OctokitService).toSelf();
 
