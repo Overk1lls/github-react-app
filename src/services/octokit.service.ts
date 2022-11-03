@@ -10,7 +10,7 @@ import type { OctokitResponse, Endpoints } from '@octokit/types';
 import type { PaginatingEndpoints } from '@octokit/plugin-paginate-rest';
 import type { PaginationResults } from '@octokit/plugin-paginate-rest/dist-types/types';
 
-const { AUTH_CLIENT_ID: GITHUB_CLIENT_ID, AUTH_CLIENT_SECRET: GITHUB_CLIENT_SECRET } = config;
+const { AUTH_CLIENT_ID, AUTH_CLIENT_SECRET } = config;
 
 export interface Paginate {
   skip?: number;
@@ -82,7 +82,7 @@ export class OctokitService {
 
   async getTokenByCode(code: string): Promise<AccessTokenResponse> {
     const { data } = await this.octokit.request<AccessTokenResponse | OctokitErrorResponse, any>(
-      `POST https://github.com/login/oauth/access_token?client_id=${GITHUB_CLIENT_ID}&client_secret=${GITHUB_CLIENT_SECRET}&code=${code}`
+      `GET https://github.com/login/oauth/access_token?client_id=${AUTH_CLIENT_ID}&client_secret=${AUTH_CLIENT_SECRET}&code=${code}`
     );
     if ('error' in data) {
       throw new LogicError(ErrorCode.AuthExpired, data.error_description);

@@ -3,7 +3,7 @@ import appRootPath from 'app-root-path';
 
 interface Config {
   PORT: number;
-  OCTOKIT_TOKEN: string;
+  OCTOKIT_TOKEN?: string;
   AUTH_CLIENT_ID: string;
   AUTH_CLIENT_SECRET: string;
 }
@@ -33,8 +33,10 @@ function getConfig(): Config {
     }
   });
   return {
-    ...envConfig.parsed,
     PORT: getPort(),
+    OCTOKIT_TOKEN: process.env.OCTOKIT_TOKEN,
+    AUTH_CLIENT_ID: process.env.AUTH_CLIENT_ID,
+    AUTH_CLIENT_SECRET: process.env.AUTH_CLIENT_SECRET,
   } as Config;
 }
 
