@@ -27,8 +27,8 @@ import { APP_GUARD } from '@nestjs/core';
     ThrottlerModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
-        ttl: config.getOrThrow('THROTTLE_TTL'),
-        limit: config.getOrThrow('THROTTLE_LIMIT'),
+        ttl: config.get('THROTTLE_TTL') || 60,
+        limit: config.get('THROTTLE_LIMIT') || 10,
       }),
     }),
     OctokitModule,
